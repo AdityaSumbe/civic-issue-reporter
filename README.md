@@ -1,2 +1,2 @@
 # civic-issue-reporter
-A full-stack civic issue reporting platform with photo/geo-tagged complaints, AI-based auto-triage, and an authority dashboard for status tracking.
+A full-stack civic issue management platform designed to help citizens report local issues and enable authorities to track, assign, and resolve them through a structured workflow.
