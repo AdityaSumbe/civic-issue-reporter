@@ -11,6 +11,7 @@ import com.aditya.civic_issue_reporter.entity.IssueStatus;
 import com.aditya.civic_issue_reporter.entity.User;
 import com.aditya.civic_issue_reporter.repository.UserRepository;
 import com.aditya.civic_issue_reporter.services.IssueService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,7 +45,7 @@ public class IssueController {
     @PostMapping
     @PreAuthorize("hasRole('CITIZEN')")
     public ResponseEntity<IssueResponse> createIssue(
-            @RequestBody IssueCreateRequest request,
+            @Valid @RequestBody IssueCreateRequest request,
             Authentication authentication
     ) {
         User citizen = userRepository.findByEmail(authentication.getName())
@@ -78,6 +79,7 @@ public class IssueController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<IssueResponse> assignDepartment(
             @PathVariable Long id,
+            @Valid
             @RequestBody DepartmentAssignmentRequest request,
             Authentication authentication
     ) {
@@ -100,7 +102,7 @@ public class IssueController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<IssueResponse> assignOfficer(
             @PathVariable Long id,
-            @RequestBody OfficerAssignmentRequest request
+            @Valid @RequestBody OfficerAssignmentRequest request
     ) {
         Issue issue = issueService.assignOfficer(
                 id,
@@ -116,6 +118,7 @@ public class IssueController {
     @PreAuthorize("hasAnyRole('OFFICER', 'ADMIN')")
     public ResponseEntity<IssueResponse> updateIssueStatus(
             @PathVariable Long id,
+            @Valid
             @RequestBody IssueStatusUpdateRequest request,
             Authentication authentication
     ) {
