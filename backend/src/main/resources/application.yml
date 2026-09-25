@@ -24,3 +24,11 @@ management:
 jwt:
   secret: ${JWT_SECRET:change-this-development-secret-key-to-a-long-random-value}
   expiration: 86400000
+
+app:
+  admin:
+    email: ${ADMIN_EMAIL:admin@civic.local}
+    password: ${ADMIN_PASSWORD:}
+  officer:
+    email: ${OFFICER_EMAIL:}
+    password: ${OFFICER_PASSWORD:}

@@ -1,5 +1,8 @@
 package com.aditya.civic_issue_reporter.dto;
 
+import com.aditya.civic_issue_reporter.entity.IssuePriority;
+import com.aditya.civic_issue_reporter.entity.IssueStatus;
+
 import java.time.LocalDateTime;
 
 public class IssueResponse {
@@ -15,23 +18,25 @@ public class IssueResponse {
     private Long departmentId;
     private String departmentName;
 
-    private Long reportedBy;
-    private String reportedByName;
-
-    private Long assignedTo;
+    private Long assignedToId;
     private String assignedToName;
 
-    private String status;
-    private String priority;
+    private IssueStatus status;
+    private IssuePriority priority;
 
     private Double latitude;
     private Double longitude;
     private String address;
     private String imageUrl;
 
+    private Long reportedById;
+    private String reportedByName;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime resolvedAt;
+
+    // getters and setters
 
     public Long getId() {
         return id;
@@ -97,28 +102,12 @@ public class IssueResponse {
         this.departmentName = departmentName;
     }
 
-    public Long getReportedBy() {
-        return reportedBy;
+    public Long getAssignedToId() {
+        return assignedToId;
     }
 
-    public void setReportedBy(Long reportedBy) {
-        this.reportedBy = reportedBy;
-    }
-
-    public String getReportedByName() {
-        return reportedByName;
-    }
-
-    public void setReportedByName(String reportedByName) {
-        this.reportedByName = reportedByName;
-    }
-
-    public Long getAssignedTo() {
-        return assignedTo;
-    }
-
-    public void setAssignedTo(Long assignedTo) {
-        this.assignedTo = assignedTo;
+    public void setAssignedToId(Long assignedToId) {
+        this.assignedToId = assignedToId;
     }
 
     public String getAssignedToName() {
@@ -129,19 +118,19 @@ public class IssueResponse {
         this.assignedToName = assignedToName;
     }
 
-    public String getStatus() {
+    public IssueStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(IssueStatus status) {
         this.status = status;
     }
 
-    public String getPriority() {
+    public IssuePriority getPriority() {
         return priority;
     }
 
-    public void setPriority(String priority) {
+    public void setPriority(IssuePriority priority) {
         this.priority = priority;
     }
 
@@ -175,6 +164,22 @@ public class IssueResponse {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public Long getReportedById() {
+        return reportedById;
+    }
+
+    public void setReportedById(Long reportedById) {
+        this.reportedById = reportedById;
+    }
+
+    public String getReportedByName() {
+        return reportedByName;
+    }
+
+    public void setReportedByName(String reportedByName) {
+        this.reportedByName = reportedByName;
     }
 
     public LocalDateTime getCreatedAt() {

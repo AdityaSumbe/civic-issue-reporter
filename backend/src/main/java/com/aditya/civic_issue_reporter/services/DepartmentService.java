@@ -42,6 +42,13 @@ public class DepartmentService {
         return departmentRepository.save(existingDepartment);
     }
 
+    public void deleteDepartment(Long id) {
+        Department department = departmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Department not found"));
+
+        departmentRepository.delete(department);
+    }
+
     public Department deactivateDepartment(Long id) {
         Department department = getDepartmentById(id);
 

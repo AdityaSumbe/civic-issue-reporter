@@ -1,4 +1,4 @@
-package com.aditya.civic_issue_reporter.service;
+package com.aditya.civic_issue_reporter.services;
 
 import com.aditya.civic_issue_reporter.entity.Category;
 import com.aditya.civic_issue_reporter.repository.CategoryRepository;
