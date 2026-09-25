@@ -1,9 +1,11 @@
 package com.aditya.civic_issue_reporter.repository;
 
 import com.aditya.civic_issue_reporter.entity.Issue;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IssueRepository extends JpaRepository<Issue, Long> {
@@ -13,4 +15,6 @@ public interface IssueRepository extends JpaRepository<Issue, Long> {
     boolean existsByIssueNumber(String issueNumber);
 
     List<Issue> findByReportedById(Long userId);
+
+    Page<Issue> findByReportedById(Long userId, Pageable pageable);
 }

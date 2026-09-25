@@ -21,6 +21,9 @@ import com.aditya.civic_issue_reporter.entity.StatusHistory;
 import com.aditya.civic_issue_reporter.services.StatusHistoryService;
 import com.aditya.civic_issue_reporter.exception.ResourceNotFoundException;
 import com.aditya.civic_issue_reporter.exception.BadRequestException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 
 import java.util.List;
 
@@ -62,16 +65,16 @@ public class IssueController {
     }
 
     @GetMapping("/my")
-    @PreAuthorize("hasRole('CITIZEN')")
-    public ResponseEntity<List<IssueResponse>> getMyIssues(
-            Authentication authentication
+    public ResponseEntity<Page<IssueResponse>> getMyIssues(
+            Authentication authentication,
+            @PageableDefault(size = 10, sort = "createdAt") Pageable pageable
     ) {
-        User citizen = userRepository.findByEmail(authentication.getName())
+        User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() ->
-                        new RuntimeException("Authenticated user not found"));
+                        new ResourceNotFoundException("Authenticated user not found"));
 
         return ResponseEntity.ok(
-                issueService.getIssuesByCitizen(citizen.getId())
+                issueService.getIssuesByCitizen(user.getId(), pageable)
         );
     }
 
@@ -226,14 +229,12 @@ public class IssueController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('OFFICER', 'ADMIN')")
-    public ResponseEntity<List<IssueResponse>> getAllIssues() {
-
-        List<IssueResponse> issues = issueService.getAllIssues()
-                .stream()
-                .map(issueService::toIssueResponse)
-                .toList();
-
-        return ResponseEntity.ok(issues);
+    public ResponseEntity<Page<IssueResponse>> getAllIssues(
+            @PageableDefault(size = 10, sort = "createdAt") Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                issueService.getAllIssues(pageable)
+        );
     }
 
     private StatusHistoryResponse toStatusHistoryResponse(StatusHistory history) {

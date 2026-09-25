@@ -19,6 +19,8 @@ import com.aditya.civic_issue_reporter.repository.StatusHistoryRepository;
 import com.aditya.civic_issue_reporter.exception.BadRequestException;
 import com.aditya.civic_issue_reporter.exception.ResourceNotFoundException;
 import com.aditya.civic_issue_reporter.exception.UnauthorizedException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.UUID;
@@ -130,6 +132,19 @@ public class IssueService {
                 .stream()
                 .map(this::toIssueResponse)
                 .toList();
+    }
+
+    public Page<IssueResponse> getAllIssues(Pageable pageable) {
+        return issueRepository.findAll(pageable)
+                .map(this::toIssueResponse);
+    }
+
+    public Page<IssueResponse> getIssuesByCitizen(
+            Long userId,
+            Pageable pageable
+    ) {
+        return issueRepository.findByReportedById(userId, pageable)
+                .map(this::toIssueResponse);
     }
 
     private String generateIssueNumber() {
