@@ -3,6 +3,8 @@ package com.aditya.civic_issue_reporter.services;
 import com.aditya.civic_issue_reporter.entity.Category;
 import com.aditya.civic_issue_reporter.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
+import com.aditya.civic_issue_reporter.exception.BadRequestException;
+import com.aditya.civic_issue_reporter.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -21,12 +23,12 @@ public class CategoryService {
 
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
     }
 
     public Category createCategory(Category category) {
         if (categoryRepository.existsByName(category.getName())) {
-            throw new RuntimeException("Category already exists");
+            throw new BadRequestException("Category already exists");
         }
 
         return categoryRepository.save(category);

@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.aditya.civic_issue_reporter.exception.ResourceNotFoundException;
 
 @RestController
 @RequestMapping("/api/users")
@@ -22,7 +23,7 @@ public class UserController {
     public UserResponse getCurrentUser(Authentication authentication) {
 
         User user = userRepository.findByEmail(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         return new UserResponse(
                 user.getId(),

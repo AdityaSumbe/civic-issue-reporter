@@ -5,6 +5,8 @@ import com.aditya.civic_issue_reporter.entity.UserRole;
 import com.aditya.civic_issue_reporter.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.aditya.civic_issue_reporter.exception.BadRequestException;
+import com.aditya.civic_issue_reporter.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -23,7 +25,7 @@ public class UserService {
     public User registerCitizen(User user) {
 
         if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("Email already registered");
+            throw new BadRequestException("Email already registered");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -35,13 +37,13 @@ public class UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found with id: " + id));
+                        new ResourceNotFoundException("User not found with id: " + id));
     }
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found with email: " + email));
+                        new ResourceNotFoundException("User not found with email: " + email));
     }
 
     public List<User> getAllUsers() {

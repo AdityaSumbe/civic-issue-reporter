@@ -16,6 +16,9 @@ import com.aditya.civic_issue_reporter.dto.IssueResponse;
 import com.aditya.civic_issue_reporter.entity.UserRole;
 import com.aditya.civic_issue_reporter.entity.StatusHistory;
 import com.aditya.civic_issue_reporter.repository.StatusHistoryRepository;
+import com.aditya.civic_issue_reporter.exception.BadRequestException;
+import com.aditya.civic_issue_reporter.exception.ResourceNotFoundException;
+import com.aditya.civic_issue_reporter.exception.UnauthorizedException;
 
 import java.util.List;
 import java.util.UUID;
@@ -45,12 +48,13 @@ public class IssueService {
 
         User citizen = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found with id: " + userId));
+                                new ResourceNotFoundException("User not found with id: " + userId));
 
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() ->
-                        new RuntimeException("Category not found with id: "
-                                + request.getCategoryId()));
+                        new ResourceNotFoundException(
+                                "Category not found with id: " + request.getCategoryId()
+                        ));
 
         Issue issue = new Issue();
 
@@ -74,18 +78,18 @@ public class IssueService {
     public Issue getIssueById(Long id) {
         return issueRepository.findById(id)
                 .orElseThrow(() ->
-                        new RuntimeException("Issue not found with id: " + id));
+                        new ResourceNotFoundException("Issue not found with id: " + id));
     }
 
     public Issue getIssueByIdForUser(Long issueId, Long userId) {
 
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() ->
-                        new RuntimeException("Issue not found with id: " + issueId));
+                        new ResourceNotFoundException("Issue not found with id: " + issueId));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found with id: " + userId));
+                        new ResourceNotFoundException("User not found with id: " + userId));
 
         if (user.getRole() == UserRole.ADMIN) {
             return issue;
@@ -93,7 +97,7 @@ public class IssueService {
 
         if (user.getRole() == UserRole.CITIZEN) {
             if (!issue.getReportedBy().getId().equals(userId)) {
-                throw new RuntimeException(
+                throw new UnauthorizedException(
                         "You are not authorized to view this issue"
                 );
             }
@@ -104,7 +108,7 @@ public class IssueService {
         if (user.getRole() == UserRole.OFFICER) {
             if (issue.getAssignedTo() == null
                     || !issue.getAssignedTo().getId().equals(userId)) {
-                throw new RuntimeException(
+                throw new UnauthorizedException(
                         "You are not authorized to view this issue"
                 );
             }
@@ -112,7 +116,7 @@ public class IssueService {
             return issue;
         }
 
-        throw new RuntimeException(
+        throw new UnauthorizedException(
                 "You are not authorized to view this issue"
         );
     }
@@ -143,22 +147,24 @@ public class IssueService {
 
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() ->
-                        new RuntimeException("Issue not found with id: " + issueId));
+                        new ResourceNotFoundException("Issue not found with id: " + issueId));
 
         Department department = departmentRepository.findById(departmentId)
                 .orElseThrow(() ->
-                        new RuntimeException("Department not found with id: " + departmentId));
+                        new ResourceNotFoundException("Department not found with id: " + departmentId));
 
         if (!department.isActive()) {
-            throw new RuntimeException("Department is inactive");
+            throw new BadRequestException("Department is inactive");
         }
 
         User admin = userRepository.findById(changedByUserId)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found with id: " + changedByUserId));
+                        new ResourceNotFoundException("User not found with id: " + changedByUserId));
 
         if (admin.getRole() != UserRole.ADMIN) {
-            throw new RuntimeException("Only an admin can assign departments");
+            throw new UnauthorizedException(
+                    "Only an admin can assign departments"
+            );
         }
 
         IssueStatus oldStatus = issue.getStatus();
@@ -193,14 +199,16 @@ public class IssueService {
 
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() ->
-                        new RuntimeException("Issue not found with id: " + issueId));
+                        new ResourceNotFoundException("Issue not found with id: " + issueId));
 
         User officer = userRepository.findById(officerId)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found with id: " + officerId));
+                        new ResourceNotFoundException("User not found with id: " + officerId));
 
         if (officer.getRole() != UserRole.OFFICER) {
-            throw new RuntimeException("Selected user is not an officer");
+            throw new BadRequestException(
+                    "Selected user is not an officer"
+            );
         }
 
         issue.setAssignedTo(officer);
@@ -221,11 +229,15 @@ public class IssueService {
 
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() ->
-                        new RuntimeException("Issue not found with id: " + issueId));
+                        new ResourceNotFoundException(
+                                "Issue not found with id: " + issueId
+                        ));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found with id: " + userId));
+                        new ResourceNotFoundException(
+                                "User not found with id: " + userId
+                        ));
 
         IssueStatus oldStatus = issue.getStatus();
 
@@ -235,7 +247,7 @@ public class IssueService {
             if (issue.getAssignedTo() == null
                     || !issue.getAssignedTo().getId().equals(userId)) {
 
-                throw new RuntimeException(
+                throw new UnauthorizedException(
                         "You are not assigned to this issue"
                 );
             }
@@ -243,7 +255,7 @@ public class IssueService {
 
         // Validate status transition
         if (!isValidStatusTransition(oldStatus, newStatus)) {
-            throw new RuntimeException(
+            throw new BadRequestException(
                     "Invalid status transition: "
                             + oldStatus + " -> " + newStatus
             );
@@ -274,24 +286,26 @@ public class IssueService {
 
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() ->
-                        new RuntimeException("Issue not found with id: " + issueId));
+                        new ResourceNotFoundException("Issue not found with id: " + issueId));
 
         User citizen = userRepository.findById(citizenId)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found with id: " + citizenId));
+                        new ResourceNotFoundException("User not found with id: " + citizenId));
 
         if (citizen.getRole() != UserRole.CITIZEN) {
-            throw new RuntimeException("Only citizens can verify issues");
+            throw new UnauthorizedException(
+                    "Only citizens can verify issues"
+            );
         }
 
         if (!issue.getReportedBy().getId().equals(citizenId)) {
-            throw new RuntimeException(
+            throw new UnauthorizedException(
                     "You can only verify your own reported issues"
             );
         }
 
         if (issue.getStatus() != IssueStatus.RESOLVED) {
-            throw new RuntimeException(
+            throw new BadRequestException(
                     "Only resolved issues can be verified"
             );
         }
@@ -315,24 +329,24 @@ public class IssueService {
 
         Issue issue = issueRepository.findById(issueId)
                 .orElseThrow(() ->
-                        new RuntimeException("Issue not found with id: " + issueId));
+                        new ResourceNotFoundException("Issue not found with id: " + issueId));
 
         User citizen = userRepository.findById(citizenId)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found with id: " + citizenId));
+                        new ResourceNotFoundException("User not found with id: " + citizenId));
 
         if (citizen.getRole() != UserRole.CITIZEN) {
-            throw new RuntimeException("Only citizens can reopen issues");
+            throw new UnauthorizedException("Only citizens can reopen issues");
         }
 
         if (!issue.getReportedBy().getId().equals(citizenId)) {
-            throw new RuntimeException(
+            throw new UnauthorizedException(
                     "You can only reopen your own reported issues"
             );
         }
 
         if (issue.getStatus() != IssueStatus.RESOLVED) {
-            throw new RuntimeException(
+            throw new BadRequestException(
                     "Only resolved issues can be reopened"
             );
         }

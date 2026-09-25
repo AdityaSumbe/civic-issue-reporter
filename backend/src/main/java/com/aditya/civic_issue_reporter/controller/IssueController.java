@@ -18,6 +18,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import com.aditya.civic_issue_reporter.entity.StatusHistory;
 import com.aditya.civic_issue_reporter.services.StatusHistoryService;
+import com.aditya.civic_issue_reporter.exception.ResourceNotFoundException;
+import com.aditya.civic_issue_reporter.exception.BadRequestException;
 
 import java.util.List;
 
@@ -47,7 +49,7 @@ public class IssueController {
     ) {
         User citizen = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() ->
-                        new RuntimeException("Authenticated user not found"));
+                        new ResourceNotFoundException("Authenticated user not found"));
 
         Issue issue = issueService.createIssue(
                 request,
@@ -119,7 +121,7 @@ public class IssueController {
     ) {
         User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() ->
-                        new RuntimeException("Authenticated user not found"));
+                        new ResourceNotFoundException("Authenticated user not found"));
 
         IssueStatus newStatus;
 
@@ -128,7 +130,7 @@ public class IssueController {
                     request.getStatus().toUpperCase()
             );
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException(
+            throw new BadRequestException(
                     "Invalid status: " + request.getStatus()
             );
         }
@@ -194,7 +196,7 @@ public class IssueController {
     ) {
         User user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() ->
-                        new RuntimeException("Authenticated user not found"));
+                        new ResourceNotFoundException("Authenticated user not found"));
 
         Issue issue = issueService.getIssueByIdForUser(
                 id,

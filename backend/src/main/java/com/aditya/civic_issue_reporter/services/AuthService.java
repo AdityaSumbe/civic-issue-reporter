@@ -11,6 +11,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.aditya.civic_issue_reporter.exception.BadRequestException;
+import com.aditya.civic_issue_reporter.exception.ResourceNotFoundException;
 
 @Service
 public class AuthService {
@@ -35,7 +37,7 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) {
 
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email is already registered");
+            throw new BadRequestException("Email is already registered");
         }
 
         User user = new User();
@@ -82,7 +84,9 @@ public class AuthService {
 
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() ->
-                        new RuntimeException("User not found")
+                        new ResourceNotFoundException(
+                                "User not found with email: " + request.getEmail()
+                        )
                 );
 
         String token = jwtService.generateToken(

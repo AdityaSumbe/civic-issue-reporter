@@ -3,6 +3,8 @@ package com.aditya.civic_issue_reporter.services;
 import com.aditya.civic_issue_reporter.entity.Department;
 import com.aditya.civic_issue_reporter.repository.DepartmentRepository;
 import org.springframework.stereotype.Service;
+import com.aditya.civic_issue_reporter.exception.BadRequestException;
+import com.aditya.civic_issue_reporter.exception.ResourceNotFoundException;
 
 import java.util.List;
 
@@ -21,12 +23,12 @@ public class DepartmentService {
 
     public Department getDepartmentById(Long id) {
         return departmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Department not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Department not found with id: " + id));
     }
 
     public Department createDepartment(Department department) {
         if (departmentRepository.existsByName(department.getName())) {
-            throw new RuntimeException("Department already exists");
+            throw new BadRequestException("Department already exists");
         }
 
         return departmentRepository.save(department);
@@ -44,7 +46,7 @@ public class DepartmentService {
 
     public void deleteDepartment(Long id) {
         Department department = departmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Department not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Department not found"));
 
         departmentRepository.delete(department);
     }
