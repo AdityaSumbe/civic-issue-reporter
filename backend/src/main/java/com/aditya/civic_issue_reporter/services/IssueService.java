@@ -196,6 +196,11 @@ public class IssueService {
                 .map(this::toIssueResponse);
     }
 
+    public Page<IssueResponse> getOverdueIssues(Pageable pageable) {
+        return issueRepository.findOverdueIssues(pageable)
+                .map(this::toIssueResponse);
+    }
+
     private String generateIssueNumber() {
         return "CIV-" + UUID.randomUUID()
                 .toString()
@@ -499,6 +504,10 @@ public class IssueService {
         response.setCreatedAt(issue.getCreatedAt());
         response.setUpdatedAt(issue.getUpdatedAt());
         response.setDueAt(issue.getDueAt());
+        response.setOverdue(
+                issue.getDueAt() != null &&
+                        LocalDateTime.now().isAfter(issue.getDueAt())
+        );
         response.setResolvedAt(issue.getResolvedAt());
 
         return response;

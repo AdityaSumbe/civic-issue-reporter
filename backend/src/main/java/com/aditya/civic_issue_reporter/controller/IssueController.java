@@ -267,6 +267,16 @@ public class IssueController {
         );
     }
 
+    @GetMapping("/overdue")
+    @PreAuthorize("hasAnyRole('OFFICER', 'ADMIN')")
+    public ResponseEntity<Page<IssueResponse>> getOverdueIssues(
+            @PageableDefault(size = 10, sort = "dueAt") Pageable pageable
+    ) {
+        return ResponseEntity.ok(
+                issueService.getOverdueIssues(pageable)
+        );
+    }
+
     private StatusHistoryResponse toStatusHistoryResponse(StatusHistory history) {
 
         StatusHistoryResponse response = new StatusHistoryResponse();
