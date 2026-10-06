@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/civic_issue_db
-    username: ${DB_USERNAME:civic_user}
-    password: ${DB_PASSWORD:}
+    username: civic_user
+    password: civic_password
 
   jpa:
     hibernate:

@@ -21,6 +21,8 @@ import com.aditya.civic_issue_reporter.exception.ResourceNotFoundException;
 import com.aditya.civic_issue_reporter.exception.UnauthorizedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import com.aditya.civic_issue_reporter.repository.IssueSpecification;
 
 import java.util.List;
 import java.util.UUID;
@@ -136,6 +138,23 @@ public class IssueService {
 
     public Page<IssueResponse> getAllIssues(Pageable pageable) {
         return issueRepository.findAll(pageable)
+                .map(this::toIssueResponse);
+    }
+
+    public Page<IssueResponse> getFilteredIssues(
+            IssueStatus status,
+            IssuePriority priority,
+            Long categoryId,
+            Long departmentId,
+            Pageable pageable
+    ) {
+        Specification<Issue> specification = Specification
+                .where(IssueSpecification.hasStatus(status))
+                .and(IssueSpecification.hasPriority(priority))
+                .and(IssueSpecification.hasCategory(categoryId))
+                .and(IssueSpecification.hasDepartment(departmentId));
+
+        return issueRepository.findAll(specification, pageable)
                 .map(this::toIssueResponse);
     }
 

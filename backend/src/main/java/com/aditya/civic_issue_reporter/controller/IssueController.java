@@ -24,6 +24,9 @@ import com.aditya.civic_issue_reporter.exception.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import com.aditya.civic_issue_reporter.entity.IssuePriority;
+import com.aditya.civic_issue_reporter.entity.IssueStatus;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -230,10 +233,20 @@ public class IssueController {
     @GetMapping
     @PreAuthorize("hasAnyRole('OFFICER', 'ADMIN')")
     public ResponseEntity<Page<IssueResponse>> getAllIssues(
+            @RequestParam(required = false) IssueStatus status,
+            @RequestParam(required = false) IssuePriority priority,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long departmentId,
             @PageableDefault(size = 10, sort = "createdAt") Pageable pageable
     ) {
         return ResponseEntity.ok(
-                issueService.getAllIssues(pageable)
+                issueService.getFilteredIssues(
+                        status,
+                        priority,
+                        categoryId,
+                        departmentId,
+                        pageable
+                )
         );
     }
 
