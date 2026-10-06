@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import com.aditya.civic_issue_reporter.repository.IssueSpecification;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -70,6 +71,17 @@ public class IssueService {
 
         issue.setStatus(IssueStatus.OPEN);
         issue.setPriority(IssuePriority.MEDIUM);
+
+        LocalDateTime now = LocalDateTime.now();
+
+        long slaHours = switch (issue.getPriority()) {
+            case HIGH -> 24;
+            case MEDIUM -> 72;
+            case LOW -> 168;
+            default -> 168;
+        };
+
+        issue.setDueAt(now.plusHours(slaHours));
 
         issue.setLatitude(request.getLatitude());
         issue.setLongitude(request.getLongitude());
@@ -486,6 +498,7 @@ public class IssueService {
 
         response.setCreatedAt(issue.getCreatedAt());
         response.setUpdatedAt(issue.getUpdatedAt());
+        response.setDueAt(issue.getDueAt());
         response.setResolvedAt(issue.getResolvedAt());
 
         return response;

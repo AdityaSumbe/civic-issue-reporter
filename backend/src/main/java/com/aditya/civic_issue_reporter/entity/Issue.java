@@ -62,6 +62,8 @@ public class Issue {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    private LocalDateTime dueAt;
+
     @Column(name = "resolved_at")
     private LocalDateTime resolvedAt;
 
@@ -157,6 +159,14 @@ public class Issue {
 
     public void setPriority(IssuePriority priority) {
         this.priority = priority;
+    }
+
+    public LocalDateTime getDueAt() {
+        return dueAt;
+    }
+
+    public void setDueAt(LocalDateTime dueAt) {
+        this.dueAt = dueAt;
     }
 
     public Double getLatitude() {

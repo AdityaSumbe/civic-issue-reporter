@@ -34,6 +34,7 @@ public class IssueResponse {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime dueAt;
     private LocalDateTime resolvedAt;
 
     // getters and setters
@@ -196,6 +197,14 @@ public class IssueResponse {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getDueAt() {
+        return dueAt;
+    }
+
+    public void setDueAt(LocalDateTime dueAt) {
+        this.dueAt = dueAt;
     }
 
     public LocalDateTime getResolvedAt() {
