@@ -233,6 +233,7 @@ public class IssueController {
     @GetMapping
     @PreAuthorize("hasAnyRole('OFFICER', 'ADMIN')")
     public ResponseEntity<Page<IssueResponse>> getAllIssues(
+            @RequestParam(required = false) String search,
             @RequestParam(required = false) IssueStatus status,
             @RequestParam(required = false) IssuePriority priority,
             @RequestParam(required = false) Long categoryId,
@@ -241,12 +242,28 @@ public class IssueController {
     ) {
         return ResponseEntity.ok(
                 issueService.getFilteredIssues(
+                        search,
                         status,
                         priority,
                         categoryId,
                         departmentId,
                         pageable
                 )
+        );
+    }
+
+    @GetMapping("/search")
+    @PreAuthorize("hasAnyRole('OFFICER', 'ADMIN')")
+    public ResponseEntity<Page<IssueResponse>> searchIssues(
+            @RequestParam String search,
+            @PageableDefault(size = 10, sort = "createdAt") Pageable pageable
+    ) {
+        if (search.isBlank()) {
+            throw new BadRequestException("Search keyword is required");
+        }
+
+        return ResponseEntity.ok(
+                issueService.searchIssues(search, pageable)
         );
     }
 

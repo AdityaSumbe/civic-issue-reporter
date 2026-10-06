@@ -142,6 +142,7 @@ public class IssueService {
     }
 
     public Page<IssueResponse> getFilteredIssues(
+            String search,
             IssueStatus status,
             IssuePriority priority,
             Long categoryId,
@@ -149,12 +150,29 @@ public class IssueService {
             Pageable pageable
     ) {
         Specification<Issue> specification = Specification
-                .where(IssueSpecification.hasStatus(status))
+                .where(IssueSpecification.hasSearch(search))
+                .and(IssueSpecification.hasStatus(status))
                 .and(IssueSpecification.hasPriority(priority))
                 .and(IssueSpecification.hasCategory(categoryId))
                 .and(IssueSpecification.hasDepartment(departmentId));
 
         return issueRepository.findAll(specification, pageable)
+                .map(this::toIssueResponse);
+    }
+
+    public Page<IssueResponse> searchIssues(
+            String search,
+            Pageable pageable
+    ) {
+        String keyword = search.trim();
+
+        return issueRepository
+                .findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrIssueNumberContainingIgnoreCase(
+                        keyword,
+                        keyword,
+                        keyword,
+                        pageable
+                )
                 .map(this::toIssueResponse);
     }
 

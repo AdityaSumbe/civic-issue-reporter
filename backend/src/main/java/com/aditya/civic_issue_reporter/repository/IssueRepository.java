@@ -18,4 +18,11 @@ public interface IssueRepository extends JpaRepository<Issue, Long>, JpaSpecific
     List<Issue> findByReportedById(Long userId);
 
     Page<Issue> findByReportedById(Long userId, Pageable pageable);
+
+    Page<Issue> findByTitleContainingIgnoreCaseOrDescriptionContainingIgnoreCaseOrIssueNumberContainingIgnoreCase(
+            String title,
+            String description,
+            String issueNumber,
+            Pageable pageable
+    );
 }

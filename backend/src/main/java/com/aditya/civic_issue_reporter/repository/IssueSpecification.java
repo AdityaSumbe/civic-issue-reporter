@@ -40,4 +40,20 @@ public class IssueSpecification {
                         departmentId
                 );
     }
+
+    public static Specification<Issue> hasSearch(String search) {
+        return (root, query, cb) -> {
+            if (search == null || search.isBlank()) {
+                return null;
+            }
+
+            String keyword = "%" + search.trim().toLowerCase() + "%";
+
+            return cb.or(
+                    cb.like(cb.lower(root.get("title")), keyword),
+                    cb.like(cb.lower(root.get("description")), keyword),
+                    cb.like(cb.lower(root.get("issueNumber")), keyword)
+            );
+        };
+    }
 }
