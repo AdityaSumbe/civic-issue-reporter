@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import com.aditya.civic_issue_reporter.repository.IssueSpecification;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -196,9 +197,19 @@ public class IssueService {
                 .map(this::toIssueResponse);
     }
 
+    @Transactional
     public Page<IssueResponse> getOverdueIssues(Pageable pageable) {
-        return issueRepository.findOverdueIssues(pageable)
-                .map(this::toIssueResponse);
+
+        Page<Issue> overdueIssues =
+                issueRepository.findOverdueIssues(pageable);
+
+        overdueIssues.forEach(issue -> {
+            if (!issue.isEscalated()) {
+                issue.setEscalated(true);
+            }
+        });
+
+        return overdueIssues.map(this::toIssueResponse);
     }
 
     private String generateIssueNumber() {
@@ -503,12 +514,15 @@ public class IssueService {
 
         response.setCreatedAt(issue.getCreatedAt());
         response.setUpdatedAt(issue.getUpdatedAt());
+
         response.setDueAt(issue.getDueAt());
         response.setOverdue(
                 issue.getDueAt() != null &&
                         LocalDateTime.now().isAfter(issue.getDueAt())
         );
         response.setResolvedAt(issue.getResolvedAt());
+
+        response.setEscalated(issue.isEscalated());
 
         return response;
     }

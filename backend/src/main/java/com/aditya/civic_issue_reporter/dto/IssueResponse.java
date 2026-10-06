@@ -37,6 +37,7 @@ public class IssueResponse {
     private LocalDateTime dueAt;
     private LocalDateTime resolvedAt;
     private boolean overdue;
+    private boolean escalated;
 
     // getters and setters
 
@@ -222,5 +223,13 @@ public class IssueResponse {
 
     public void setOverdue(boolean overdue) {
         this.overdue = overdue;
+    }
+
+    public boolean isEscalated() {
+        return escalated;
+    }
+
+    public void setEscalated(boolean escalated) {
+        this.escalated = escalated;
     }
 }

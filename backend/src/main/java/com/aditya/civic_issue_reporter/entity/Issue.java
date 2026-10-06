@@ -67,6 +67,8 @@ public class Issue {
     @Column(name = "resolved_at")
     private LocalDateTime resolvedAt;
 
+    private boolean escalated;
+
     @PrePersist
     protected void onCreate() {
         LocalDateTime now = LocalDateTime.now();
@@ -215,5 +217,13 @@ public class Issue {
 
     public void setResolvedAt(LocalDateTime resolvedAt) {
         this.resolvedAt = resolvedAt;
+    }
+
+    public boolean isEscalated() {
+        return escalated;
+    }
+
+    public void setEscalated(boolean escalated) {
+        this.escalated = escalated;
     }
 }
