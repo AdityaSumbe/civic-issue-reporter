@@ -37,17 +37,19 @@ public class IssueService {
     private final UserRepository userRepository;
     private final DepartmentRepository departmentRepository;
     private final StatusHistoryRepository statusHistoryRepository;
+    private final NotificationService notificationService;
 
     public IssueService(IssueRepository issueRepository,
                         CategoryRepository categoryRepository,
                         UserRepository userRepository,
                         DepartmentRepository departmentRepository,
-                        StatusHistoryRepository statusHistoryRepository) {
+                        StatusHistoryRepository statusHistoryRepository, NotificationService notificationService) {
         this.issueRepository = issueRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
         this.departmentRepository = departmentRepository;
         this.statusHistoryRepository = statusHistoryRepository;
+        this.notificationService = notificationService;
     }
 
     public Issue createIssue(IssueCreateRequest request, Long userId) {
@@ -206,6 +208,14 @@ public class IssueService {
         overdueIssues.forEach(issue -> {
             if (!issue.isEscalated()) {
                 issue.setEscalated(true);
+
+                if (issue.getAssignedTo() != null) {
+                    notificationService.createNotification(
+                            issue.getAssignedTo(),
+                            "Issue " + issue.getIssueNumber()
+                                    + " has been escalated because its SLA deadline has been exceeded."
+                    );
+                }
             }
         });
 
