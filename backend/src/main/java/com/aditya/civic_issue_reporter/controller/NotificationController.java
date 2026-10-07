@@ -44,4 +44,23 @@ public class NotificationController {
                 )
         );
     }
+
+    @PatchMapping("/{id}/read")
+    public ResponseEntity<NotificationResponse> markAsRead(
+            @PathVariable Long id,
+            Authentication authentication
+    ) {
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        return ResponseEntity.ok(
+                notificationService.markAsRead(
+                        id,
+                        user.getId()
+                )
+        );
+    }
 }

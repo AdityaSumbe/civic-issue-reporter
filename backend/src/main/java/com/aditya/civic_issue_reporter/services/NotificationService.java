@@ -51,4 +51,21 @@ public class NotificationService {
                 .findByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .map(this::toNotificationResponse);
     }
+
+    public NotificationResponse markAsRead(
+            Long notificationId,
+            Long userId
+    ) {
+        Notification notification = notificationRepository
+                .findByIdAndUserId(notificationId, userId)
+                .orElseThrow(() ->
+                        new RuntimeException("Notification not found"));
+
+        notification.setRead(true);
+
+        Notification savedNotification =
+                notificationRepository.save(notification);
+
+        return toNotificationResponse(savedNotification);
+    }
 }
