@@ -4,6 +4,9 @@ import com.aditya.civic_issue_reporter.dto.IssueStatusSummaryResponse;
 import com.aditya.civic_issue_reporter.entity.IssueStatus;
 import com.aditya.civic_issue_reporter.repository.IssueRepository;
 import org.springframework.stereotype.Service;
+import com.aditya.civic_issue_reporter.dto.CategoryIssueCountResponse;
+import com.aditya.civic_issue_reporter.dto.DepartmentIssueCountResponse;
+import java.util.List;
 
 @Service
 public class AnalyticsService {
@@ -30,4 +33,13 @@ public class AnalyticsService {
 
         return response;
     }
+
+    public List<CategoryIssueCountResponse> getCategoryIssueCounts() {
+        return issueRepository.countIssuesByCategory();
+    }
+
+    public List<DepartmentIssueCountResponse> getDepartmentIssueCounts() {
+        return issueRepository.countIssuesByDepartment();
+    }
+
 }

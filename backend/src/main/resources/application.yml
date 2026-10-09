@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/civic_issue_db
     username: civic_user
-    password: civic_password
+    password: 1234
 
   jpa:
     hibernate:

@@ -7,6 +7,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.aditya.civic_issue_reporter.dto.CategoryIssueCountResponse;
+import com.aditya.civic_issue_reporter.dto.DepartmentIssueCountResponse;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/analytics")
@@ -25,4 +28,22 @@ public class AnalyticsController {
                 analyticsService.getIssueStatusSummary()
         );
     }
+
+    @GetMapping("/issues/categories")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<CategoryIssueCountResponse>> getCategoryIssueCounts() {
+        return ResponseEntity.ok(
+                analyticsService.getCategoryIssueCounts()
+        );
+    }
+
+    @GetMapping("/issues/departments")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<DepartmentIssueCountResponse>> getDepartmentIssueCounts() {
+        return ResponseEntity.ok(
+                analyticsService.getDepartmentIssueCounts()
+        );
+    }
+
+
 }
