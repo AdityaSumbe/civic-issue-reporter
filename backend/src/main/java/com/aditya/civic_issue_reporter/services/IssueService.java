@@ -24,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import com.aditya.civic_issue_reporter.repository.IssueSpecification;
 import org.springframework.transaction.annotation.Transactional;
+import com.aditya.civic_issue_reporter.dto.AiIssueSuggestionResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,25 +39,33 @@ public class IssueService {
     private final DepartmentRepository departmentRepository;
     private final StatusHistoryRepository statusHistoryRepository;
     private final NotificationService notificationService;
+    private final OllamaAiService ollamaAiService;
 
-    public IssueService(IssueRepository issueRepository,
-                        CategoryRepository categoryRepository,
-                        UserRepository userRepository,
-                        DepartmentRepository departmentRepository,
-                        StatusHistoryRepository statusHistoryRepository, NotificationService notificationService) {
+    public IssueService(
+            IssueRepository issueRepository,
+            CategoryRepository categoryRepository,
+            UserRepository userRepository,
+            DepartmentRepository departmentRepository,
+            StatusHistoryRepository statusHistoryRepository,
+            NotificationService notificationService,
+            OllamaAiService ollamaAiService) {
+
         this.issueRepository = issueRepository;
         this.categoryRepository = categoryRepository;
         this.userRepository = userRepository;
         this.departmentRepository = departmentRepository;
         this.statusHistoryRepository = statusHistoryRepository;
         this.notificationService = notificationService;
+        this.ollamaAiService = ollamaAiService;
     }
 
     public Issue createIssue(IssueCreateRequest request, Long userId) {
 
         User citizen = userRepository.findById(userId)
                 .orElseThrow(() ->
-                                new ResourceNotFoundException("User not found with id: " + userId));
+                        new ResourceNotFoundException(
+                                "User not found with id: " + userId
+                        ));
 
         Category category = categoryRepository.findById(request.getCategoryId())
                 .orElseThrow(() ->
@@ -64,24 +73,36 @@ public class IssueService {
                                 "Category not found with id: " + request.getCategoryId()
                         ));
 
+        AiIssueSuggestionResponse suggestion =
+                ollamaAiService.suggestIssue(
+                        request.getTitle(),
+                        request.getDescription()
+                );
+
+        IssuePriority aiPriority =
+                IssuePriority.valueOf(suggestion.getPriority());
+
         Issue issue = new Issue();
 
         issue.setIssueNumber(generateIssueNumber());
         issue.setTitle(request.getTitle());
         issue.setDescription(request.getDescription());
         issue.setCategory(category);
+
+        // Link the issue to the authenticated citizen.
         issue.setReportedBy(citizen);
 
+        // Use the AI-assigned priority; do not overwrite it.
+        issue.setPriority(aiPriority);
         issue.setStatus(IssueStatus.OPEN);
-        issue.setPriority(IssuePriority.MEDIUM);
 
         LocalDateTime now = LocalDateTime.now();
 
-        long slaHours = switch (issue.getPriority()) {
+        long slaHours = switch (aiPriority) {
+            case CRITICAL -> 4;
             case HIGH -> 24;
             case MEDIUM -> 72;
             case LOW -> 168;
-            default -> 168;
         };
 
         issue.setDueAt(now.plusHours(slaHours));

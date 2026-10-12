@@ -32,3 +32,7 @@ app:
   officer:
     email: ${OFFICER_EMAIL:}
     password: ${OFFICER_PASSWORD:}
+
+ollama:
+  base-url: http://localhost:11434
+  model: qwen2.5:3b
