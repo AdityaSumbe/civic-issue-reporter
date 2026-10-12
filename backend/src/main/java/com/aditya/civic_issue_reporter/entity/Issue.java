@@ -44,6 +44,9 @@ public class Issue {
     @Column(nullable = false, length = 20)
     private IssuePriority priority = IssuePriority.MEDIUM;
 
+    @Column(columnDefinition = "TEXT")
+    private String aiExplanation;
+
     @Column
     private Double latitude;
 
@@ -161,6 +164,14 @@ public class Issue {
 
     public void setPriority(IssuePriority priority) {
         this.priority = priority;
+    }
+
+    public String getAiExplanation() {
+        return aiExplanation;
+    }
+
+    public void setAiExplanation(String aiExplanation) {
+        this.aiExplanation = aiExplanation;
     }
 
     public LocalDateTime getDueAt() {

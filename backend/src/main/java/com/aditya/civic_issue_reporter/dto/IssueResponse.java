@@ -23,6 +23,7 @@ public class IssueResponse {
 
     private IssueStatus status;
     private IssuePriority priority;
+    private String aiExplanation;
 
     private Double latitude;
     private Double longitude;
@@ -231,5 +232,13 @@ public class IssueResponse {
 
     public void setEscalated(boolean escalated) {
         this.escalated = escalated;
+    }
+
+    public String getAiExplanation() {
+        return aiExplanation;
+    }
+
+    public void setAiExplanation(String aiExplanation) {
+        this.aiExplanation = aiExplanation;
     }
 }

@@ -94,6 +94,7 @@ public class IssueService {
 
         // Use the AI-assigned priority; do not overwrite it.
         issue.setPriority(aiPriority);
+        issue.setAiExplanation(suggestion.getExplanation());
         issue.setStatus(IssueStatus.OPEN);
 
         LocalDateTime now = LocalDateTime.now();
@@ -534,6 +535,7 @@ public class IssueService {
 
         response.setStatus(issue.getStatus());
         response.setPriority(issue.getPriority());
+        response.setAiExplanation(issue.getAiExplanation());
 
         response.setLatitude(issue.getLatitude());
         response.setLongitude(issue.getLongitude());
